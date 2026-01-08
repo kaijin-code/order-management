@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package coupon;
+
+option java_package = "com.example.coupon.grpc";
+option java_multiple_files = true;
+
+// 优惠券服务
+service CouponService {
+  // 获取可用优惠券模板列表
+  rpc ListAvailableTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
+  
+  // 用户领取优惠券
+  rpc ClaimCoupon(ClaimCouponRequest) returns (ClaimCouponResponse);
+  
+  // 获取用户优惠券列表
+  rpc GetUserCoupons(GetUserCouponsRequest) returns (GetUserCouponsResponse);
+  
+  // 验证并计算优惠
+  rpc ValidateCoupon(ValidateCouponRequest) returns (ValidateCouponResponse);
+  
+  // 使用优惠券（下单时调用）
+  rpc UseCoupon(UseCouponRequest) returns (UseCouponResponse);
+  
+  // 退还优惠券（订单取消时调用）
+  rpc RefundCoupon(RefundCouponRequest) returns (RefundCouponResponse);
+}
+
+// 优惠券类型
+enum CouponType {
+  COUPON_TYPE_UNSPECIFIED = 0;
+  FULL_REDUCTION = 1;  // 满减
+  DISCOUNT = 2;        // 折扣
+  DIRECT_REDUCTION = 3; // 立减
+}
+
+// 优惠券状态
+enum CouponStatus {
+  COUPON_STATUS_UNSPECIFIED = 0;
+  UNUSED = 1;
+  USED = 2;
+  EXPIRED = 3;
+}
+
+// 优惠券模板
+message CouponTemplate {
+  int64 id = 1;
+  string name = 2;
+  CouponType type = 3;
+  double discount_value = 4;
+  double min_amount = 5;
+  double max_discount = 6;
+  int64 remain_count = 7;
+  int64 start_time = 8;  // Unix timestamp
+  int64 end_time = 9;
+}
+
+// 用户优惠券
+message UserCoupon {
+  int64 id = 1;
+  string coupon_code = 2;
+  CouponTemplate template = 3;
+  CouponStatus status = 4;
+  int64 expire_time = 5;
+  int64 created_at = 6;
+}
+
+// 请求/响应消息
+message ListTemplatesRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message ListTemplatesResponse {
+  repeated CouponTemplate templates = 1;
+  int32 total = 2;
+}
+
+message ClaimCouponRequest {
+  int64 user_id = 1;
+  int64 template_id = 2;
+}
+
+message ClaimCouponResponse {
+  bool success = 1;
+  string message = 2;
+  UserCoupon coupon = 3;
+}
+
+message GetUserCouponsRequest {
+  int64 user_id = 1;
+  CouponStatus status = 2;  // 可选，筛选状态
+}
+
+message GetUserCouponsResponse {
+  repeated UserCoupon coupons = 1;
+}
+
+message ValidateCouponRequest {
+  string coupon_code = 1;
+  int64 user_id = 2;
+  double order_amount = 3;
+}
+
+message ValidateCouponResponse {
+  bool valid = 1;
+  string message = 2;
+  double discount_amount = 3;
+  double final_amount = 4;
+}
+
+message UseCouponRequest {
+  string coupon_code = 1;
+  int64 user_id = 2;
+  int64 order_id = 3;
+  double order_amount = 4;
+}
+
+message UseCouponResponse {
+  bool success = 1;
+  string message = 2;
+  double discount_amount = 3;
+  double final_amount = 4;
+}
+
+message RefundCouponRequest {
+  int64 order_id = 1;
+  int64 user_id = 2;
+}
+
+message RefundCouponResponse {
+  bool success = 1;
+  string message = 2;
+}
