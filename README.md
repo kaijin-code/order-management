@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 订单管理系统
 
-## Getting Started
+## 技术栈
 
-First, run the development server:
+- **前端**: Next.js 16 + React 19 + Tailwind CSS 4
+- **后端**: Next.js API Routes (App Router)
+- **数据库**: SQLite (better-sqlite3)
+- **认证**: JWT + bcrypt
+- **微服务通信**: gRPC (与外部优惠券服务交互)
+
+## 核心功能
+
+### 用户认证
+
+- 注册/登录 (`/api/auth/register`, `/api/auth/login`)
+- JWT Token 认证，7天有效期
+
+### 订单管理
+
+- 创建订单 (支持优惠券抵扣)
+- 查看用户订单列表
+- 订单状态管理
+
+### 优惠券系统 (通过 gRPC 调用外部 Java 服务)
+
+- 获取可用优惠券模板
+- 领取优惠券
+- 验证/使用/退还优惠券
+- 支持满减、折扣、立减三种类型
+
+## 架构特点
+
+- **前后端一体**: Next.js 全栈方案
+- **微服务集成**: 订单服务 (Node.js) + 优惠券服务 (Java/gRPC)
+- **数据库设计**: users 表 + orders 表，支持优惠券字段迁移
+
+## 配置说明
+
+| 配置项        | 默认值           | 说明                                     |
+| ------------- | ---------------- | ---------------------------------------- |
+| 开发端口      | 3001             | `npm run dev`                            |
+| gRPC 服务地址 | `localhost:9090` | 环境变量 `COUPON_SERVICE_URL`            |
+| JWT 密钥      | -                | 环境变量 `JWT_SECRET` (生产环境必须设置) |
+
+## 快速开始
 
 ```bash
+# 安装依赖
+npm install
+
+# 启动开发服务器
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# 构建生产版本
+npm run build
+
+# 启动生产服务器
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 项目结构
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── auth/          # 认证接口
+│   │   ├── coupons/       # 优惠券接口
+│   │   └── orders/        # 订单接口
+│   └── page.tsx           # 主页面
+├── components/            # React 组件
+├── grpc/                  # gRPC 客户端
+│   ├── client.ts
+│   └── protos/
+└── lib/                   # 工具库
+    ├── auth.ts            # 认证工具
+    └── db.ts              # 数据库连接
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+docs/coupon-service-java/  # Java 优惠券服务参考实现
+```
