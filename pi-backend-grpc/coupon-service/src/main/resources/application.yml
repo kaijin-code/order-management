@@ -1,0 +1,32 @@
+server:
+  port: 8580
+
+grpc:
+  server:
+    port: 9091
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/coupon?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 123456
+      timeout: 3000ms
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: com.example.coupon.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 新用户优惠券配置
+coupon:
+  new-user:
+    template-ids: 1,2,3 # 新用户赠送的优惠券模板ID列表
