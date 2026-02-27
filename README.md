@@ -1,80 +1,80 @@
-# 订单管理系统
+# Order Management System
 
-## 技术栈
+## Tech Stack
 
-- **前端**: Next.js 16 + React 19 + Tailwind CSS 4
-- **后端**: Next.js API Routes (App Router)
-- **数据库**: SQLite (better-sqlite3)
-- **认证**: JWT + bcrypt
-- **微服务通信**: gRPC (与外部优惠券服务交互)
+- **Frontend**: Next.js 16 + React 19 + Tailwind CSS 4
+- **Backend**: Next.js API Routes (App Router)
+- **Database**: SQLite (better-sqlite3)
+- **Auth**: JWT + bcrypt
+- **Service-to-service communication**: gRPC (integrates with an external coupon service)
 
-## 核心功能
+## Core Features
 
-### 用户认证
+### User Authentication
 
-- 注册/登录 (`/api/auth/register`, `/api/auth/login`)
-- JWT Token 认证，7天有效期
+- Register / Login (`/api/auth/register`, `/api/auth/login`)
+- JWT-based authentication with a 7-day expiration
 
-### 订单管理
+### Order Management
 
-- 创建订单 (支持优惠券抵扣)
-- 查看用户订单列表
-- 订单状态管理
+- Create orders (supports coupon discounts)
+- View a user's order list
+- Order status management
 
-### 优惠券系统 (通过 gRPC 调用外部 Java 服务)
+### Coupon System (via gRPC to an external Java service)
 
-- 获取可用优惠券模板
-- 领取优惠券
-- 验证/使用/退还优惠券
-- 支持满减、折扣、立减三种类型
+- List available coupon templates
+- Claim coupons
+- Validate / use / return coupons
+- Supports three coupon types: threshold discount, percentage discount, and instant reduction
 
-## 架构特点
+## Architecture Highlights
 
-- **前后端一体**: Next.js 全栈方案
-- **微服务集成**: 订单服务 (Node.js) + 优惠券服务 (Java/gRPC)
-- **数据库设计**: users 表 + orders 表，支持优惠券字段迁移
+- **Full-stack in one**: Next.js for both UI and API
+- **Microservice integration**: Order service (Node.js) + Coupon service (Java/gRPC)
+- **Database design**: `users` + `orders` tables, with coupon-related fields supported through migrations
 
-## 配置说明
+## Configuration
 
-| 配置项        | 默认值           | 说明                                     |
-| ------------- | ---------------- | ---------------------------------------- |
-| 开发端口      | 3001             | `npm run dev`                            |
-| gRPC 服务地址 | `localhost:9090` | 环境变量 `COUPON_SERVICE_URL`            |
-| JWT 密钥      | -                | 环境变量 `JWT_SECRET` (生产环境必须设置) |
+| Config Item      | Default Value    | Description                                                |
+| ---------------- | ---------------- | ---------------------------------------------------------- |
+| Dev port         | 3001             | `npm run dev`                                              |
+| gRPC service URL | `localhost:9090` | Environment variable `COUPON_SERVICE_URL`                  |
+| JWT secret       | -                | Environment variable `JWT_SECRET` (required in production) |
 
-## 快速开始
+## Quick Start
 
 ```bash
-# 安装依赖
+# Install dependencies
 npm install
 
-# 启动开发服务器
+# Start development server
 npm run dev
 
-# 构建生产版本
+# Build for production
 npm run build
 
-# 启动生产服务器
+# Start production server
 npm start
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 src/
 ├── app/
 │   ├── api/
-│   │   ├── auth/          # 认证接口
-│   │   ├── coupons/       # 优惠券接口
-│   │   └── orders/        # 订单接口
-│   └── page.tsx           # 主页面
-├── components/            # React 组件
-├── grpc/                  # gRPC 客户端
+│   │   ├── auth/          # Auth APIs
+│   │   ├── coupons/       # Coupon APIs
+│   │   └── orders/        # Order APIs
+│   └── page.tsx           # Home page
+├── components/            # React components
+├── grpc/                  # gRPC client
 │   ├── client.ts
 │   └── protos/
-└── lib/                   # 工具库
-    ├── auth.ts            # 认证工具
-    └── db.ts              # 数据库连接
+└── lib/                   # Utilities
+	├── auth.ts            # Auth helpers
+	└── db.ts              # Database connection
 
-docs/coupon-service-java/  # Java 优惠券服务参考实现
+docs/coupon-service-java/  # Reference Java coupon service implementation
 ```
